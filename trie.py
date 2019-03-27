@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from collections import defaultdict
 from collections.abc import Set
 
@@ -30,24 +31,41 @@ class TrieNode(Set):
         return node._end
     
     def search_1(self, term):
+        print ("Start: ", ''.join(term))
         results = set()
         element = []
-        def _search(m, node, i):
+        def _search(m, node, i, current_skip_steps, max_skip_steps):
             element.append(m)
-            if i == len(term):
-                if node._end:
-                    results.add(''.join(element))
-            elif term[i] == '?':
-                for k,child in node._children.items():
-                    _search(k, child, i+1)
-            elif term[i] == '*':
-                _search('', node, i+1)
-                for k,child in node._children.items():
-                    _search(k, child, i)
-            elif term[i] in node._children:
-                _search(term[i], node._children[term[i]], i+1)
+            print(current_skip_steps, max_skip_steps, ''.join(element), i, len(term))
+            if current_skip_steps <= max_skip_steps and max_skip_steps != -1:
+                #if node._end:
+                #    results.add(''.join(element))
+                for k, child in node._children.items():
+                    _search(k, child, i, current_skip_steps+1, max_skip_steps)
+                    if i+current_skip_steps <= len(term):
+                        _search(k, child, i+current_skip_steps, -1, -1)
+            elif max_skip_steps != -1:
+                pass
+            else:
+                if i == len(term):
+                    if node._end:
+                        results.add(''.join(element))
+                elif term[i] == '?':
+                    for k,child in node._children.items():
+                        _search(k, child, i+1, -1, -1)
+                elif term[i] == '*':
+                    _search('', node, i+1, -1, -1)
+                    for k,child in node._children.items():
+                        _search(k, child, i, -1, -1)
+                elif term[i] == '[W:0-2]':
+                    for k,child in node._children.items():
+                        _search(k, child, i, 1, 2)
+                        _search(k, child, i+1, -1, -1)
+                elif term[i] in node._children:
+                    _search(term[i], node._children[term[i]], i+1, -1, -1)
+                    
             element.pop()
-        _search('', self, 0)
+        _search('', self, 0, -1, -1)
 
         return results
     
@@ -111,12 +129,30 @@ root.add("aba*")
 root.add("abb")
 root.add("abc")
 root.add("abd")
-print(root.search_1("*b"))
-for v in root.search_2("**abc**"):
-    print (v)
+root.add("")
+root.add("中华人民")
 
 
-
-
-
+root.add("我鱼")
+root.add("我爱鱼")
+root.add("我爱吃鱼")
+root.add("我爱吃大鱼")
+root.add("我爱吃大小鱼")
+root.add("我爱吃大小黄鱼")
+root.add("我狗")
+root.add("我爱狗")
+root.add("我爱吃狗")
+root.add("我爱吃大狗")
+root.add("我爱吃大小狗")
+root.add("我爱吃大小黄狗")
+#print (root.search_1(['我','[W:0-2]','鱼']))
+#print (root.search_1(['[W:0-2]','大','鱼']))
+def print_all(node):
+    ks = []
+    for k,d in node._children.items():
+        ks.append(k)
+    print(' '.join(ks))
+    for k,d in node._children.items():
+        print_all (d)
+print_all(root)
 
