@@ -1,5 +1,5 @@
 # chatbox_pattern
-自动问答匹配pattern，在给定query下，在所有数据中查询
+trie 树实现自动问答匹配pattern，在给定query下，在所有数据中查询
 
 目前提供的查询功能有：
 1. 提供'?', 表示通配一个字符
