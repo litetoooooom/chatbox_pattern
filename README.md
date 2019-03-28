@@ -6,10 +6,10 @@ trie 树实现自动问答匹配pattern，在给定query下，在所有数据中
 2. 提供'*', 表示通配所有字符
 3. 提供[W:0-3]: 表示通配0-3个匹配字，其中3是可修改，
 
-    
-    root = TrieNode()
-    root.add("aba*")
-    root.add("abb")
+```python    
+root = TrieNode()
+root.add("aba*")
+root.add("abb")
     root.add("abc")
     root.add("abd")
     root.add("")
@@ -35,7 +35,7 @@ trie 树实现自动问答匹配pattern，在给定query下，在所有数据中
     print (root.search_1(['[W:0-2]', '鱼']))
     print (root.search_1(['我','爱','吃','[W:0-2]', '狗']))
     print (root.search_1(['[W:0-2]', '狗']))
-    
+    ```
 结果输出：
 
 {'我爱吃大狗', '我狗', '我爱吃狗', '我爱狗'}
