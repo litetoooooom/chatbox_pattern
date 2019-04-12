@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# author: Tom
 from collections import defaultdict
 from collections.abc import Set
 import re
@@ -32,6 +33,9 @@ class TrieNode(Set):
         return node._end
     
     def search_1(self, term):
+        """
+        此方法支持查找串的通配查找
+        """
         results = set()
         element = []
         
@@ -60,7 +64,7 @@ class TrieNode(Set):
                     for k,child in node._children.items():
                         _search(k, child, i, 1, 0, int(max_s))
                 elif term[i] in node._children:
-                    _search(term[i], node._children[term[i]], i+1, -1, -1, -1)
+                    _search(term[i], node._children[term[i]], i+1, -1, -1, -1) 
                 elif node._end:
                     if element[-1] == term[i]:
                         results.add(''.join(element))
@@ -68,44 +72,32 @@ class TrieNode(Set):
         _search('', self, 0, -1, -1, -1)
 
         return results
-    """    
+    
     def search_2(self, term):
-        def _add(indexes, i):
-            while i < len(term) and term[i] == '*':
-                indexes.add(i)
-                i += 1
-            indexes.add(i)
-        
-        indexes = set()
-        _add(indexes, 0)
-        if self._end and len(term) in indexes:
-            yield ''
-        
-        indexes_stack = [indexes]
-        element = ['']
-        iter_stack = [iter(self._children.items())]
-        while iter_stack:
-            for k, node in iter_stack[-1]:
-                new_indexes = set()
-                for i in indexes_stack[-1]:
-                    if i >= len(term):
-                        continue
-                    elif term[i] == '*':
-                        _add(new_indexes, i)
-                    elif term[i] == '?' or term[i] == k:
-                        _add(new_indexes, i + 1)
-                if new_indexes:
+        """
+        此方法支持对库数据通配匹配
+        """
+        results = set()
+        element = []
+        def _search(m, node, i):
+            if i == len(term):
+                if node._end:
+                    results.add("".join(element))
+                return
+            for k, child in node._children.items():
+                res = re.findall('\[W:0-([1-9]*)\]', k)
+                if len(res) > 0:
+                    for j in range(int(res[0])):
+                        element.append(k)
+                        _search(k, child, i+j)
+                        element.pop()
+                elif k == term[i]:
                     element.append(k)
-                    if node._end and len(term) in new_indexes:
-                        yield ''.join(element)
-                    indexes_stack.append(new_indexes)
-                    iter_stack.append(iter(node._children.items()))
-                    break
-            else:
-                element.pop()
-                indexes_stack.pop()
-                iter_stack.pop()
-    """
+                    _search(k, child, i+1)
+                    element.pop()
+        
+        _search("", self, 0)
+        return results
 
     def __iter__(self):
         element = ['']
@@ -156,13 +148,15 @@ def test():
     root.add("我爱吃大狗")
     root.add("我爱吃大小狗")
     root.add("我爱吃大小黄狗")
-    print (root.search_1(['我','[W:0-3]','狗']))
-    print (root.search_1(['[W:0-3]','大','鱼']))
-    print (root.search_1(['我','爱','吃','[W:0-2]', '鱼']))
-    print (root.search_1(['[W:0-2]', '鱼']))
-    print (root.search_1(['我','爱','吃','[W:0-2]', '狗']))
-    print (root.search_1(['[W:0-2]', '狗']))
     
+    root.add(["我"] + ["[W:0-3]"])
+    root.add(["我", "[W:0-3]", "鱼"])
+    root.add(["[W:0-3]", "鱼"])
+    root.add(["yes" ,"[W:0-2]" ,"it's"])
+
+    print (root.search_2(["我","爱", "鱼"]))
+    print (root.search_2(["yes" ,"," ,"it's"]))
+
     #print_tree(root)
 
 if __name__ == "__main__":
