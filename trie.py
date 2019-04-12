@@ -82,7 +82,7 @@ class TrieNode(Set):
         def _search(m, node, i):
             if i == len(term):
                 if node._end:
-                    results.add("".join(element))
+                    results.add(" ".join(element))
                 return
             for k, child in node._children.items():
                 res = re.findall('\[W:0-([1-9]*)\]', k)
