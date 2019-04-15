@@ -11,9 +11,10 @@ The trie tree implements an automatic question and answer match pattern, queryin
 
 The query functions currently available are:
 
-Provide '?' to indicate a wildcard character
-Provide '*' to indicate all wildcard characters
-Provide [W:0-3]: indicates 0-3 matching words in the wildcard, 3 of which are modifiable,
+1. Provide '?' to indicate a wildcard character
+2. Provide '*' to indicate all wildcard characters
+3. Provide [W:0-3]: indicates 0-3 matching words in the wildcard, 3 of which are modifiable,
+
 Subsequent function addition: slot replacement
 
 ```python    
