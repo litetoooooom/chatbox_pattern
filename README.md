@@ -18,6 +18,8 @@ The query functions currently available are:
 
 Subsequent function addition: slot replacement
 
+Please see the blog for details.
+
 ```python    
 root = TrieNode()
 root.add("aba*")
